@@ -11,6 +11,7 @@
 #import "BouncePresentAnimationController.h"
 #import "ShrinkDismissAnimationController.h"
 #import "FlipAnimationController.h"
+#import "SwipeInteractionController.h"
 #import "AppDelegate.h"
 #import "Cat.h"
 
@@ -24,6 +25,7 @@
     BouncePresentAnimationController *_bounceAnimationController;
     ShrinkDismissAnimationController *_shrinkDismissAnimationController;
     FlipAnimationController *_flipAnimationController;
+    SwipeInteractionController *_swipeInteractionController;
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -32,6 +34,7 @@
         _bounceAnimationController = [BouncePresentAnimationController new];
         _shrinkDismissAnimationController = [ShrinkDismissAnimationController new];
         _flipAnimationController = [FlipAnimationController new];
+        _swipeInteractionController = [SwipeInteractionController new];
     }
     return self;
 }
@@ -53,8 +56,17 @@
                                   animationControllerForOperation:(UINavigationControllerOperation)operation
                                                fromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC
 {
+    if (operation == UINavigationControllerOperationPush){
+        [_swipeInteractionController wireToViewController:toVC];
+    }
+    
     _flipAnimationController.reverse = operation == UINavigationControllerOperationPop;
     return _flipAnimationController;
+}
+
+- (id<UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController
+{
+    return _swipeInteractionController.interactionInProgress ? _swipeInteractionController:nil;
 }
 
 
